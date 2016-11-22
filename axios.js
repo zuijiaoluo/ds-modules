@@ -1,32 +1,48 @@
 import axios from 'axios'
 import _ from 'lodash'
 
-let config = {
-  host: 'http://localhost:3000'
-}
+import ls from './localStorage.js'
 
-var newAxios = function (){
-
+var newAxios = function (obj){
+  this.host = obj.host
 }
 
 newAxios.prototype.get = function(url, params, cb){
   if (_.isFunction(params)) {
-    this.send(url, 'get', {}, {}, params)
-  }else{
-    this.send(url, 'get', {}, params, cb)
+    cb = params
+    params = {}
   }
+  this.send({url: url, method: 'get', params: params}, cb)
 }
 
-newAxios.prototype.send = function(url, method, params, data, cb){
-  params.access_token = "tbdWMzIADmsqgBpXISxHLAYF7SU9Z8Z6bzWvAFHEusl3DCAwSG1wxnG55QK6yY8D";
+newAxios.prototype.post = function(url, data, cb){
+  this.send({url: url, method: 'post', data: data}, cb)
+}
+
+newAxios.prototype.put = function(url, data, cb){
+  this.send({url: url, method: 'put', data: data}, cb)
+}
+
+newAxios.prototype.patch = function(url, data, cb){
+  this.send({url: url, method: 'patch', data: data}, cb)
+}
+
+newAxios.prototype.delete = function(url, data, cb){
+  if (_.isFunction(params)) {
+    cb = params
+    params = {}
+  }
+  this.send({url: url, method: 'delete', params: params}, cb)
+}
+
+newAxios.prototype.send = function(obj, cb){
+  if (!obj.params) obj.params = {}
+  obj.params.access_token = ls.get('access_token')
   axios({
-    method: method,
-    url: config.host + url,
-    params: params,
-    data: {
-      firstName: 'Fred',
-      lastName: 'Flintstone'
-    },
+    method: obj.method,
+    url: this.host + obj.url,
+    params: obj.params,
+    data: obj.data,
     timeout: 1000,
     auth: {
       username: 'janedoe',
@@ -41,4 +57,4 @@ newAxios.prototype.send = function(url, method, params, data, cb){
   })
 }
 
-module.exports = new newAxios()
+module.exports = newAxios

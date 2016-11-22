@@ -1,8 +1,10 @@
-import newAxios from './axios.js'
+import Axios from './axios.js'
 import localStorage from './localStorage.js'
 
+let ajax = new Axios({host: 'http://localhost:3000'})
+
 let ds = {
-  ajax: newAxios,
+  ajax: ajax,
   ls: localStorage
 }
 
